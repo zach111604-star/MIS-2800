@@ -1,0 +1,414 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/zach111604-star/MIS-2800/blob/main/ANderson%204.1%20IC\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# IMPORTANT ❗\n",
+        "The below blocks are the lines of code to begin using sqlite3 magic.  \n",
+        "\n",
+        "This is meant to be reused as needed.  To use, go to File > Save a Copy in Drive.\n"
+      ],
+      "metadata": {
+        "id": "dv-kOS8djpz4"
+      }
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 1,
+      "metadata": {
+        "id": "3uWe5W8Pgy8R",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "e3e18ea0-e5b7-4b5a-bdf0-7c58c6e55ad6"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pandas in /usr/local/lib/python3.12/dist-packages (2.2.2)\n",
+            "Collecting pandas\n",
+            "  Downloading pandas-3.0.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (79 kB)\n",
+            "\u001b[2K     \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m79.5/79.5 kB\u001b[0m \u001b[31m3.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hRequirement already satisfied: ipython-sql in /usr/local/lib/python3.12/dist-packages (0.5.0)\n",
+            "Collecting prettytable==3.10.1\n",
+            "  Downloading prettytable-3.10.1-py3-none-any.whl.metadata (30 kB)\n",
+            "Requirement already satisfied: wcwidth in /usr/local/lib/python3.12/dist-packages (from prettytable==3.10.1) (0.5.3)\n",
+            "Requirement already satisfied: numpy>=1.26.0 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.0.2)\n",
+            "Requirement already satisfied: python-dateutil>=2.8.2 in /usr/local/lib/python3.12/dist-packages (from pandas) (2.9.0.post0)\n",
+            "Requirement already satisfied: ipython in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (7.34.0)\n",
+            "Requirement already satisfied: sqlalchemy>=2.0 in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (2.0.46)\n",
+            "Requirement already satisfied: sqlparse in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (0.5.5)\n",
+            "Requirement already satisfied: six in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (1.17.0)\n",
+            "Requirement already satisfied: ipython-genutils in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (0.2.0)\n",
+            "Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.12/dist-packages (from sqlalchemy>=2.0->ipython-sql) (3.3.1)\n",
+            "Requirement already satisfied: typing-extensions>=4.6.0 in /usr/local/lib/python3.12/dist-packages (from sqlalchemy>=2.0->ipython-sql) (4.15.0)\n",
+            "Requirement already satisfied: setuptools>=18.5 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (75.2.0)\n",
+            "Collecting jedi>=0.16 (from ipython->ipython-sql)\n",
+            "  Downloading jedi-0.19.2-py2.py3-none-any.whl.metadata (22 kB)\n",
+            "Requirement already satisfied: decorator in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (4.4.2)\n",
+            "Requirement already satisfied: pickleshare in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.7.5)\n",
+            "Requirement already satisfied: traitlets>=4.2 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (5.7.1)\n",
+            "Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (3.0.52)\n",
+            "Requirement already satisfied: pygments in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (2.19.2)\n",
+            "Requirement already satisfied: backcall in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.2.0)\n",
+            "Requirement already satisfied: matplotlib-inline in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.2.1)\n",
+            "Requirement already satisfied: pexpect>4.3 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (4.9.0)\n",
+            "Requirement already satisfied: parso<0.9.0,>=0.8.4 in /usr/local/lib/python3.12/dist-packages (from jedi>=0.16->ipython->ipython-sql) (0.8.5)\n",
+            "Requirement already satisfied: ptyprocess>=0.5 in /usr/local/lib/python3.12/dist-packages (from pexpect>4.3->ipython->ipython-sql) (0.7.0)\n",
+            "Downloading prettytable-3.10.1-py3-none-any.whl (28 kB)\n",
+            "Downloading pandas-3.0.0-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (10.9 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m10.9/10.9 MB\u001b[0m \u001b[31m69.5 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hDownloading jedi-0.19.2-py2.py3-none-any.whl (1.6 MB)\n",
+            "\u001b[2K   \u001b[90m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[32m1.6/1.6 MB\u001b[0m \u001b[31m56.6 MB/s\u001b[0m eta \u001b[36m0:00:00\u001b[0m\n",
+            "\u001b[?25hInstalling collected packages: prettytable, jedi, pandas\n",
+            "  Attempting uninstall: prettytable\n",
+            "    Found existing installation: prettytable 3.17.0\n",
+            "    Uninstalling prettytable-3.17.0:\n",
+            "      Successfully uninstalled prettytable-3.17.0\n",
+            "  Attempting uninstall: pandas\n",
+            "    Found existing installation: pandas 2.2.2\n",
+            "    Uninstalling pandas-2.2.2:\n",
+            "      Successfully uninstalled pandas-2.2.2\n",
+            "\u001b[31mERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.\n",
+            "google-colab 1.0.0 requires pandas==2.2.2, but you have pandas 3.0.0 which is incompatible.\n",
+            "bqplot 0.12.45 requires pandas<3.0.0,>=1.0.0, but you have pandas 3.0.0 which is incompatible.\n",
+            "db-dtypes 1.5.0 requires pandas<3.0.0,>=1.5.3, but you have pandas 3.0.0 which is incompatible.\n",
+            "gradio 5.50.0 requires pandas<3.0,>=1.0, but you have pandas 3.0.0 which is incompatible.\u001b[0m\u001b[31m\n",
+            "\u001b[0mSuccessfully installed jedi-0.19.2 pandas-3.0.0 prettytable-3.10.1\n"
+          ]
+        }
+      ],
+      "source": [
+        "!pip install --upgrade pandas ipython-sql prettytable==3.10.1\n"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Install the SQL extension. Remember to type exactly as shown here.\n",
+        "!pip install ipython-sql\n",
+        "print(\"ipython sql installed\")"
+      ],
+      "metadata": {
+        "id": "oPe4M__Hg6kH",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "e3d01069-cacd-48e6-d078-c4c01e03aa12"
+      },
+      "execution_count": 2,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: ipython-sql in /usr/local/lib/python3.12/dist-packages (0.5.0)\n",
+            "Requirement already satisfied: prettytable in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (3.10.1)\n",
+            "Requirement already satisfied: ipython in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (7.34.0)\n",
+            "Requirement already satisfied: sqlalchemy>=2.0 in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (2.0.46)\n",
+            "Requirement already satisfied: sqlparse in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (0.5.5)\n",
+            "Requirement already satisfied: six in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (1.17.0)\n",
+            "Requirement already satisfied: ipython-genutils in /usr/local/lib/python3.12/dist-packages (from ipython-sql) (0.2.0)\n",
+            "Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.12/dist-packages (from sqlalchemy>=2.0->ipython-sql) (3.3.1)\n",
+            "Requirement already satisfied: typing-extensions>=4.6.0 in /usr/local/lib/python3.12/dist-packages (from sqlalchemy>=2.0->ipython-sql) (4.15.0)\n",
+            "Requirement already satisfied: setuptools>=18.5 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (75.2.0)\n",
+            "Requirement already satisfied: jedi>=0.16 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.19.2)\n",
+            "Requirement already satisfied: decorator in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (4.4.2)\n",
+            "Requirement already satisfied: pickleshare in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.7.5)\n",
+            "Requirement already satisfied: traitlets>=4.2 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (5.7.1)\n",
+            "Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,<3.1.0,>=2.0.0 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (3.0.52)\n",
+            "Requirement already satisfied: pygments in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (2.19.2)\n",
+            "Requirement already satisfied: backcall in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.2.0)\n",
+            "Requirement already satisfied: matplotlib-inline in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (0.2.1)\n",
+            "Requirement already satisfied: pexpect>4.3 in /usr/local/lib/python3.12/dist-packages (from ipython->ipython-sql) (4.9.0)\n",
+            "Requirement already satisfied: wcwidth in /usr/local/lib/python3.12/dist-packages (from prettytable->ipython-sql) (0.5.3)\n",
+            "Requirement already satisfied: parso<0.9.0,>=0.8.4 in /usr/local/lib/python3.12/dist-packages (from jedi>=0.16->ipython->ipython-sql) (0.8.5)\n",
+            "Requirement already satisfied: ptyprocess>=0.5 in /usr/local/lib/python3.12/dist-packages (from pexpect>4.3->ipython->ipython-sql) (0.7.0)\n",
+            "ipython sql installed\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Load the SQL magic extension\n",
+        "%load_ext sql"
+      ],
+      "metadata": {
+        "id": "jfVpz_AChAeN"
+      },
+      "execution_count": 3,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#this code imports sqlite3 and prints a statement stating it has been imported\n",
+        "import sqlite3\n",
+        "print(\"sqlite3 imported\")"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "L0UeL4QRhCmo",
+        "outputId": "81669519-01d3-4a93-d4a0-a5883f7a874f"
+      },
+      "execution_count": 4,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "sqlite3 imported\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# This creates a brand-new, empty database file named [name of your database.db]\n",
+        "conn = sqlite3.connect('nameOfDatabase.db')\n",
+        "print(\"nameOfDatabase database created\")\n"
+      ],
+      "metadata": {
+        "id": "UL6Ka-H_hD1k",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "outputId": "4cff1b55-5ff3-4974-d981-863a3862a610"
+      },
+      "execution_count": 5,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "nameOfDatabase database created\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# This line is required so Colab stops acting like Python and acts more like a SQL database terminal\n",
+        "%sql sqlite:///nameOfDatabase.db"
+      ],
+      "metadata": {
+        "id": "QMMv0lKthM26"
+      },
+      "execution_count": 6,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# ----SPECIFIC FOR PREP/IC/HW ----"
+      ],
+      "metadata": {
+        "id": "sidFklsehR3G"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%sql\n",
+        "\n",
+        "CREATE TABLE IF NOT EXISTS products (\n",
+        "  product_id INTEGER PRIMARY KEY,\n",
+        "  product_name TEXT,\n",
+        "  product_price REAL\n",
+        ") STRICT;"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "n_tggc5sFCUU",
+        "outputId": "3c9d728d-a12f-4c10-b813-80c5ba300425"
+      },
+      "execution_count": 7,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " * sqlite:///nameOfDatabase.db\n",
+            "Done.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 7
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%sql\n",
+        "\n",
+        "INSERT INTO products (product_name, product_price)\n",
+        "VALUES\n",
+        "('Superbowl Jersey', 120.00);"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "e_CysoSKFcQ8",
+        "outputId": "89109fdc-4193-4bff-8753-9b445bdaaff0"
+      },
+      "execution_count": 8,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " * sqlite:///nameOfDatabase.db\n",
+            "1 rows affected.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 8
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%sql\n",
+        "\n",
+        "SELECT * FROM products WHERE product_price >50"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 97
+        },
+        "id": "1dk0Sns9Fq1f",
+        "outputId": "f5f38100-ef23-432a-df69-90191606fccb"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " * sqlite:///nameOfDatabase.db\n",
+            "Done.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[(1, 'Superbowl Jersey', 120.0)]"
+            ],
+            "text/html": [
+              "<table>\n",
+              "    <thead>\n",
+              "        <tr>\n",
+              "            <th>product_id</th>\n",
+              "            <th>product_name</th>\n",
+              "            <th>product_price</th>\n",
+              "        </tr>\n",
+              "    </thead>\n",
+              "    <tbody>\n",
+              "        <tr>\n",
+              "            <td>1</td>\n",
+              "            <td>Superbowl Jersey</td>\n",
+              "            <td>120.0</td>\n",
+              "        </tr>\n",
+              "    </tbody>\n",
+              "</table>"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 9
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "%%sql\n",
+        "\n",
+        "UPDATE products SET product_price = 99.99 WHERE product_name = 'Superbowl Jersey';\n",
+        "DELETE FROM products WHERE product_id = 1"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "NKI-OsZUF1FN",
+        "outputId": "85f0b3d8-1e00-4067-ebe4-5d6a97561492"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " * sqlite:///nameOfDatabase.db\n",
+            "1 rows affected.\n",
+            "1 rows affected.\n"
+          ]
+        },
+        {
+          "output_type": "execute_result",
+          "data": {
+            "text/plain": [
+              "[]"
+            ]
+          },
+          "metadata": {},
+          "execution_count": 15
+        }
+      ]
+    }
+  ]
+}
